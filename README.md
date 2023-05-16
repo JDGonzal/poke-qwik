@@ -66,3 +66,10 @@ The production build will generate client and server modules by running both cli
 ```shell
 npm run build # or `yarn build`
 ```
+
+## tailwind
+Add Tailwind
+
+```shell
+npm run qwik add tailwind # or `yarn qwik add tailwind`
+```
