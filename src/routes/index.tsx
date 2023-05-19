@@ -1,5 +1,6 @@
 import { $, component$, useSignal } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
+import { PokemonImage } from "~/components/pokemons/pokemon-image";
 
 export default component$(() => {
   const pokemonId = useSignal(1); // primitivos, boleans, strings, etc
@@ -13,12 +14,7 @@ export default component$(() => {
     <>
       <span class="text-2xl">Buscador Simple</span>
       <span class="text-9xl">{pokemonId}</span>
-      <img
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId.value}.png`}
-        width={200}
-        height={200}
-        alt="a Pokemon"
-      />
+      <PokemonImage id={pokemonId.value} size={200}/>
       <div class="mt-2">
         <button
           onClick$={() => {
