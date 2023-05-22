@@ -7,6 +7,10 @@ export default component$(() => {
   const showBackImage=useSignal(false);
 
   const changePokemonId = $((value: number) => {
+    if (value===0) {
+      showBackImage.value=!(showBackImage.value);
+      return;
+    }
     if (pokemonId.value + value <= 0) return;
     pokemonId.value += value;
   });
@@ -35,7 +39,7 @@ export default component$(() => {
         </button>
         <button
           onClick$={() => {
-            showBackImage.value=!(showBackImage.value);
+            changePokemonId(0);
           }}
           class="btn btn-primary mr-2"
         >
