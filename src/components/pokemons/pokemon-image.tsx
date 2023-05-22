@@ -4,16 +4,17 @@ interface Props {
   id: number;
   size?: number;
   backImage?: boolean;
+  isVisible?: boolean;
 }
 
 export const PokemonImage = component$(
-  ({ id, size = 100, backImage = false }: Props) => {
+  ({ id, size = 100, backImage = false, isVisible = false }: Props) => {
     //Desestructuro el valor de props
 
     const imageLoaded = useSignal(false);
 
     useTask$(({ track }) => {
-      track(() => id && backImage);
+      track(() => id);
       imageLoaded.value = false;
     });
 
@@ -45,9 +46,13 @@ export const PokemonImage = component$(
               imageLoaded.value = true;
             }, 200);
           }}
-          class={{
-            hidden: !imageLoaded.value,
-          }}
+          class={[
+            {
+              hidden: !imageLoaded.value,
+              "brightness-0": !isVisible,
+            },
+            "transition-all",
+          ]}
         />
       </div>
     );
