@@ -4,9 +4,11 @@ import { PokemonImage } from "~/components/pokemons/pokemon-image";
 
 export default component$(() => {
   const pokemonId = useSignal(1); // primitivos, boleans, strings, etc
-  const showBackImage=useSignal(false);
+  const showBackImage = useSignal(false);
+  const isPokemonVisible = useSignal(false);
 
   const changePokemonId = $((value: number) => {
+    isPokemonVisible.value = false;
     if (value===0) {
       showBackImage.value=!(showBackImage.value);
       return;
@@ -19,7 +21,12 @@ export default component$(() => {
     <>
       <span class="text-2xl">Buscador Simple</span>
       <span class="text-9xl">{pokemonId}</span>
-      <PokemonImage id={pokemonId.value} size={200} backImage={showBackImage.value}/>
+      <PokemonImage
+        id={pokemonId.value}
+        size={200}
+        backImage={showBackImage.value}
+        isVisible={isPokemonVisible.value}
+      />
       <div class="mt-2">
         <button
           onClick$={() => {
@@ -44,6 +51,14 @@ export default component$(() => {
           class="btn btn-primary mr-2"
         >
           Voltear
+        </button>
+        <button
+          onClick$={() => {
+            isPokemonVisible.value = !isPokemonVisible.value;
+          }}
+          class="btn btn-primary mr-2"
+        >
+          Revelar
         </button>
       </div>
     </>
