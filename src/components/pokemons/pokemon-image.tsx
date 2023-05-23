@@ -16,7 +16,6 @@ export const PokemonImage = component$(
     useTask$(({ track }) => {
       track(() => id);
       imageLoaded.value = false;
-      console.log('imageLoaded 1');
     });
 
     let imageUrl =
@@ -44,7 +43,6 @@ export const PokemonImage = component$(
           onLoad$={() => {
             setTimeout(() => {
               imageLoaded.value = true;
-              console.log('imageLoaded 2');
             }, 200);
           }}
           class={[
