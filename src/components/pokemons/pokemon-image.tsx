@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const PokemonImage = component$(
-  ({ id, size = 100, backImage = false, isVisible = false }: Props) => {
+  ({ id=0, size = 100, backImage = false, isVisible = false }: Props) => {
     //Desestructuro el valor de props
 
     const imageLoaded = useSignal(false);
@@ -16,6 +16,7 @@ export const PokemonImage = component$(
     useTask$(({ track }) => {
       track(() => id);
       imageLoaded.value = false;
+      console.log('imageLoaded 1');
     });
 
     let imageUrl =
@@ -32,8 +33,7 @@ export const PokemonImage = component$(
         <span
           class={{
             hidden: imageLoaded.value,
-          }}
-        >
+          }}>
           Loading...
         </span>
         <img
@@ -44,6 +44,7 @@ export const PokemonImage = component$(
           onLoad$={() => {
             setTimeout(() => {
               imageLoaded.value = true;
+              console.log('imageLoaded 2');
             }, 200);
           }}
           class={[
