@@ -1,4 +1,4 @@
-import { component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useStore, useTask$} from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 
 import { PokemonImage } from "~/components/pokemons/pokemon-image";
@@ -18,13 +18,21 @@ export default component$(() => {
   });
 
   //It is visible only for the client
-  useVisibleTask$(async({track}) => {
-    track(()=>{ pokemonState.currentPage});
-    const pokemons =await getSmallPokemons( pokemonState.currentPage*10);
-    //comment the next one and hide the "Anterior" button
-    // pokemonState.pokemons=pokemons;
-    pokemonState.pokemons=[...pokemonState.pokemons, ...pokemons];
-  })
+  // useVisibleTask$(async({track}) => {
+  //   track(()=>{ pokemonState.currentPage});
+  //   const pokemons =await getSmallPokemons( pokemonState.currentPage*10);
+  //   //comment the next one and hide the "Anterior" button
+  //   // pokemonState.pokemons=pokemons;
+  //   pokemonState.pokemons=[...pokemonState.pokemons, ...pokemons];
+  // })
+
+  useTask$(async({track}) => {
+      track(()=>{ pokemonState.currentPage});
+      const pokemons =await getSmallPokemons( pokemonState.currentPage*10);
+      //comment the next one and hide the "Anterior" button
+      // pokemonState.pokemons=pokemons;
+      pokemonState.pokemons=[...pokemonState.pokemons, ...pokemons];
+    })
 
   return (
     <>
