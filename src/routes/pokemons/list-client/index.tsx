@@ -13,14 +13,18 @@ import type { SmallPokemon } from "~/interfaces";
 
 interface PokemonPageState {
   currentPage: number;
+  isLoading: boolean;
   pokemons: SmallPokemon[];
+  isEnd: boolean;
 }
 
 export default component$(() => {
   // the "useSignal" es for Primitives, then whe need to use "useStore"
   const pokemonState = useStore<PokemonPageState>({
     currentPage: 0,
+    isLoading:false,
     pokemons: [],
+    isEnd:false,
   });
 
   //It is visible only for the client
@@ -33,19 +37,23 @@ export default component$(() => {
   // })
 
   useTask$(async ({ track }) => {
-    track(() => {
-      pokemonState.currentPage;
-    });
+    track(() =>pokemonState.currentPage);
+
+    pokemonState.isLoading=true;
+
     const pokemons = await getSmallPokemons(pokemonState.currentPage *10, 10);
     //comment the next one and hide the "Anterior" button
     // pokemonState.pokemons=pokemons;
+    const lastPokemonQuantity = pokemonState.pokemons.length;
     pokemonState.pokemons = [...pokemonState.pokemons, ...pokemons];
+
+    pokemonState.pokemons.length>lastPokemonQuantity? pokemonState.isLoading=false: pokemonState.isEnd=true;
   });
 
   useOnDocument( "scroll",$(async(event) => {
       const maxScroll = await document.body.scrollHeight;
       const currentScroll = await window.scrollY+ window.innerHeight;
-      if(await currentScroll== maxScroll){
+      if(await currentScroll== maxScroll && !pokemonState.isLoading){
         pokemonState.currentPage += await 1;
       }
     })
@@ -67,7 +75,7 @@ export default component$(() => {
           Anteriores
         </button> */}
         <button
-          onClick$={() => (pokemonState.currentPage += 1)}
+          onClick$={() => (!pokemonState.isLoading?pokemonState.currentPage += 1: pokemonState.isEnd=true)}
           class="btn btn-primary mr-2"
         >
           Siguientes
