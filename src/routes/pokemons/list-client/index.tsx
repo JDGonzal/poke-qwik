@@ -1,4 +1,10 @@
-import { component$, useStore, useTask$} from "@builder.io/qwik";
+import {
+  component$,
+  useOnDocument,
+  useStore,
+  useTask$,
+  $,
+} from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 
 import { PokemonImage } from "~/components/pokemons/pokemon-image";
@@ -26,13 +32,24 @@ export default component$(() => {
   //   pokemonState.pokemons=[...pokemonState.pokemons, ...pokemons];
   // })
 
-  useTask$(async({track}) => {
-      track(()=>{ pokemonState.currentPage});
-      const pokemons =await getSmallPokemons( pokemonState.currentPage*10);
-      //comment the next one and hide the "Anterior" button
-      // pokemonState.pokemons=pokemons;
-      pokemonState.pokemons=[...pokemonState.pokemons, ...pokemons];
+  useTask$(async ({ track }) => {
+    track(() => {
+      pokemonState.currentPage;
+    });
+    const pokemons = await getSmallPokemons(pokemonState.currentPage *10, 10);
+    //comment the next one and hide the "Anterior" button
+    // pokemonState.pokemons=pokemons;
+    pokemonState.pokemons = [...pokemonState.pokemons, ...pokemons];
+  });
+
+  useOnDocument( "scroll",$(async(event) => {
+      const maxScroll = await document.body.scrollHeight;
+      const currentScroll = await window.scrollY+ window.innerHeight;
+      if(await currentScroll== maxScroll){
+        pokemonState.currentPage += await 1;
+      }
     })
+  );
 
   return (
     <>
@@ -57,13 +74,14 @@ export default component$(() => {
         </button>
       </div>
 
-      <div class="grid grid-cols-6 mt-5">
+      <div class="grid sm:grid-cols-2 md:grid-cols-5 xl:grid-cols-10 mt-5">
         {pokemonState.pokemons.map((pokemon) => (
           <div
             key={pokemon.id}
             class="m-5 flex flex-col justify-center items-center"
           >
-            <PokemonImage id={pokemon.id} isVisible={true}/>
+            <PokemonImage id={pokemon.id} isVisible={true} />
+            <span>{pokemon.id}</span>
             <span class="capitalize">{pokemon.name}</span>
           </div>
         ))}
