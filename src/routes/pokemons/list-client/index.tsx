@@ -1,31 +1,34 @@
 import {
   component$,
   useOnDocument,
-  useStore,
   useTask$,
   $,
+  useContext,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 
 import { PokemonImage } from "~/components/pokemons/pokemon-image";
+import { PokemonListContext } from "~/context";
 import { getSmallPokemons } from "~/helpers/get-small-pokemons";
-import type { SmallPokemon } from "~/interfaces";
+// import type { SmallPokemon } from "~/interfaces";
 
-interface PokemonPageState {
-  currentPage: number;
-  isLoading: boolean;
-  pokemons: SmallPokemon[];
-  isEnd: boolean;
-}
+// interface PokemonPageState {
+//   currentPage: number;
+//   isLoading: boolean;
+//   pokemons: SmallPokemon[];
+//   isEnd: boolean;
+// }
 
 export default component$(() => {
   // the "useSignal" es for Primitives, then whe need to use "useStore"
-  const pokemonState = useStore<PokemonPageState>({
-    currentPage: 0,
-    isLoading:false,
-    pokemons: [],
-    isEnd:false,
-  });
+  // const pokemonState = useStore<PokemonPageState>({
+  //   currentPage: 0,
+  //   isLoading:false,
+  //   pokemons: [],
+  //   isEnd:false,
+  // });
+  // Change the "useStore" by "useContext"
+  const pokemonList = useContext( PokemonListContext);
 
   //It is visible only for the client
   // useVisibleTask$(async({track}) => {
@@ -37,24 +40,24 @@ export default component$(() => {
   // })
 
   useTask$(async ({ track }) => {
-    track(() =>pokemonState.currentPage);
+    track(() =>pokemonList.currentPage);
 
-    pokemonState.isLoading=true;
+    pokemonList.isLoading=true;
 
-    const pokemons = await getSmallPokemons(pokemonState.currentPage *10, 10);
+    const pokemons = await getSmallPokemons(pokemonList.currentPage *10, 10);
     //comment the next one and hide the "Anterior" button
     // pokemonState.pokemons=pokemons;
-    const lastPokemonQuantity = pokemonState.pokemons.length;
-    pokemonState.pokemons = [...pokemonState.pokemons, ...pokemons];
+    const lastPokemonQuantity = pokemonList.pokemons.length;
+    pokemonList.pokemons = [...pokemonList.pokemons, ...pokemons];
 
-    pokemonState.pokemons.length>lastPokemonQuantity? pokemonState.isLoading=false: pokemonState.isEnd=true;
+    pokemonList.pokemons.length>lastPokemonQuantity? pokemonList.isLoading=false: pokemonList.isEnd=true;
   });
 
   useOnDocument( "scroll",$(async(event) => {
       const maxScroll = await document.body.scrollHeight;
       const currentScroll = await window.scrollY+ window.innerHeight;
-      if(await currentScroll== maxScroll && !pokemonState.isLoading){
-        pokemonState.currentPage += await 1;
+      if(await currentScroll== maxScroll && !pokemonList.isLoading){
+        pokemonList.currentPage += await 1;
       }
     })
   );
@@ -63,7 +66,7 @@ export default component$(() => {
     <>
       <div class="flex flex-col">
         <span class="my-5 text-5xl">Status</span>
-        <span> Página actual: {pokemonState.currentPage}</span>
+        <span> Página actual: {pokemonList.currentPage}</span>
         <span>Está cargando Página:</span>
       </div>
       <div class="mt-10">
@@ -75,7 +78,7 @@ export default component$(() => {
           Anteriores
         </button> */}
         <button
-          onClick$={() => (!pokemonState.isLoading?pokemonState.currentPage += 1: pokemonState.isEnd=true)}
+          onClick$={() => (!pokemonList.isLoading?pokemonList.currentPage += 1: pokemonList.isEnd=true)}
           class="btn btn-primary mr-2"
         >
           Siguientes
@@ -83,7 +86,7 @@ export default component$(() => {
       </div>
 
       <div class="grid sm:grid-cols-2 md:grid-cols-5 xl:grid-cols-10 mt-5">
-        {pokemonState.pokemons.map((pokemon) => (
+        {pokemonList.pokemons.map((pokemon) => (
           <div
             key={pokemon.id}
             class="m-5 flex flex-col justify-center items-center"
