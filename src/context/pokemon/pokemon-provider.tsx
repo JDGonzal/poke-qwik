@@ -16,7 +16,7 @@ export const PokemonProvider = component$(() => {
     isPokemonVisible: true,
   });
 
-  const pokemonListini = useStore<PokemonListState>({
+  const pokemonListIni = useStore<PokemonListState>({
     currentPage: 0,
     isLoading: false,
     pokemons: [],
@@ -24,7 +24,7 @@ export const PokemonProvider = component$(() => {
   });
 
   useContextProvider(PokemonGameContext, pokemonGameIni);
-  useContextProvider(PokemonListContext, pokemonListini);
+  useContextProvider(PokemonListContext, pokemonListIni);
 
   useVisibleTask$(() => {
     if (localStorage.getItem("pokemon-game")) {
@@ -37,6 +37,18 @@ export const PokemonProvider = component$(() => {
       pokemonGameIni.showBackImage= showBackImage;
       pokemonGameIni.isPokemonVisible= isPokemonVisible;
     }
+    if (localStorage.getItem("pokemon-list")) {
+      const {currentPage=0,
+      isLoading=false,
+    pokemons=[],
+  isEnd=false} = JSON.parse(
+        localStorage.getItem("pokemon-list")!
+      ) as PokemonListState;
+      pokemonListIni.currentPage= currentPage;
+      pokemonListIni.isLoading= isLoading;
+      pokemonListIni.pokemons= pokemons;
+      pokemonListIni.isEnd=isEnd;
+    }
   });
 
   useVisibleTask$(({ track }) => {
@@ -46,6 +58,16 @@ export const PokemonProvider = component$(() => {
       pokemonGameIni.isPokemonVisible,
     ]);
     localStorage.setItem("pokemon-game", JSON.stringify(pokemonGameIni));
+  });
+
+  useVisibleTask$(({ track }) => {
+    track(() => [
+      pokemonListIni.currentPage,
+      pokemonListIni.isLoading,
+      pokemonListIni.pokemons,
+      pokemonListIni.isEnd
+    ]);
+    localStorage.setItem("pokemon-list", JSON.stringify(pokemonListIni));
   });
 
   return <Slot />;
